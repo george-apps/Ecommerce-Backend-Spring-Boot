@@ -1,5 +1,6 @@
 package com.appsgeorge.EcommerceBackend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,6 +30,7 @@ public class Address {
     @Column(name = "postCode",nullable = false,length = 20)
     private String postCode;
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id",nullable = false)
     private LocalUser user;
