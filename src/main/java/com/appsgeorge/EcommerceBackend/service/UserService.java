@@ -1,6 +1,7 @@
 package com.appsgeorge.EcommerceBackend.service;
 
 
+import com.appsgeorge.EcommerceBackend.api.model.LoginInfo;
 import com.appsgeorge.EcommerceBackend.api.model.RegistrationInfo;
 import com.appsgeorge.EcommerceBackend.exception.UserAlreadyExistsException;
 import com.appsgeorge.EcommerceBackend.model.LocalUser;
@@ -8,11 +9,19 @@ import com.appsgeorge.EcommerceBackend.model.repository.LocalUserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService {
 
     @Autowired
     private LocalUserRepo localUserRepo;
+
+    @Autowired
+    private EncryptionService encryptionService;
+
+    @Autowired
+    private JwtService jwtService;
 
     public LocalUser registerUser(RegistrationInfo registrationInfo) throws UserAlreadyExistsException {
 
@@ -25,9 +34,23 @@ public class UserService {
         user.setEmail(registrationInfo.getEmail());
         user.setFirstName(registrationInfo.getFirstName());
         user.setLastName(registrationInfo.getLastName());
-        //TODO: Encrypt password
-        user.setPassword(registrationInfo.getPassword());
+        user.setPassword(encryptionService.encryptPassword(registrationInfo.getPassword()));
         return localUserRepo.save(user);
 
     }
+
+    public String loginUser(LoginInfo loginInfo){
+        Optional<LocalUser> user = localUserRepo.findByUsernameIgnoreCase(loginInfo.getUsername());
+
+        if (user.isPresent()){
+            LocalUser localUser = user.get();
+            if(encryptionService.verifyPassword(loginInfo.getPassword(),localUser.getPassword())){
+                return jwtService.generateJwt(localUser);
+            }
+        }
+        return null;
+    }
+
+
+
 }
