@@ -21,7 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.addFilterBefore(jwtFilter, AuthorizationFilter.class);
-        http.authorizeHttpRequests(c -> c.requestMatchers("/product","/auth/register","/auth/login")
+        http.authorizeHttpRequests(c -> c.requestMatchers("/product","/auth/register","/auth/verify","/auth/login")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -29,7 +29,7 @@ public class SecurityConfig {
         );
 
         http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(AbstractHttpConfigurer::disable);
+        //http.cors(AbstractHttpConfigurer::disable);
 
         return http.build();
 

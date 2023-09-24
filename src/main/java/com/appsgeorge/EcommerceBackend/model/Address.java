@@ -36,8 +36,4 @@ public class Address {
     private LocalUser user;
 
 
-
-
-
-
 }
